@@ -3,78 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat With Global | Pro Edition</title>
+    <title>Chat With Global | Ultimate</title>
     <style>
         :root {
             --bg: #121b22; 
             --card: #1f2c33;
-            --neon: #00a884; /* Controlled by Admin */
+            --neon: #00a884; 
             --shadow: #0a1014;
             --light: #2a3942;
         }
-        body { background: var(--bg); color: #e9edef; font-family: 'Segoe UI', sans-serif; margin: 0; overflow-x: hidden; transition: 0.5s; }
-        
+        body { background: var(--bg); color: #e9edef; font-family: 'Segoe UI', sans-serif; margin: 0; }
+        .app-container { max-width: 450px; margin: auto; min-height: 100vh; display: flex; flex-direction: column; }
+
+        /* Top UID Box */
+        .top-uid-box {
+            background: var(--bg); margin: 20px; padding: 15px; border-radius: 20px;
+            box-shadow: 8px 8px 16px var(--shadow), -8px -8px 16px var(--light);
+            text-align: center; border: 1px solid var(--light);
+        }
+        .top-uid-box span { display: block; font-size: 10px; color: #8696a0; text-transform: uppercase; }
+        .top-uid-box strong { font-size: 22px; color: var(--neon); letter-spacing: 2px; }
+
+        /* Tabs/Navigation */
+        .tab-bar { display: flex; justify-content: space-around; padding: 10px; background: var(--card); border-bottom: 1px solid var(--light); }
+        .tab { cursor: pointer; color: #8696a0; font-weight: bold; padding: 10px; transition: 0.3s; }
+        .tab.active { color: var(--neon); border-bottom: 2px solid var(--neon); }
+
+        /* Contact Section */
+        .section { padding: 15px; display: none; }
+        .section.active { display: block; }
+        .btn-add {
+            background: var(--neon); color: #000; border: none; padding: 12px;
+            border-radius: 12px; width: 100%; font-weight: bold; cursor: pointer; margin-bottom: 20px;
+        }
+
+        /* List Styling */
+        .user-card {
+            display: flex; align-items: center; padding: 12px; background: var(--bg);
+            margin-bottom: 12px; border-radius: 15px; 
+            box-shadow: 5px 5px 10px var(--shadow), -5px -5px 10px var(--light);
+        }
+        .user-card img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon); margin-right: 15px; }
+        .user-info b { display: block; font-size: 15px; }
+        .user-info small { color: #8696a0; font-size: 11px; }
+
         /* Login Screen */
-        #login-page { height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
-        .neu-card { background: var(--bg); padding: 40px; border-radius: 40px; box-shadow: 15px 15px 30px var(--shadow), -15px -15px 30px var(--light); text-align: center; width: 100%; max-width: 350px; }
-        
-        /* Dashboard */
-        .app-container { max-width: 500px; margin: auto; min-height: 100vh; display: flex; flex-direction: column; background: var(--bg); }
-        .header { padding: 20px; border-bottom: 1px solid var(--light); position: sticky; top: 0; background: var(--bg); z-index: 10; }
-        .header h1 { margin: 0; font-size: 22px; color: var(--neon); }
-        .uid-tag { font-size: 11px; color: #8696a0; margin-top: 5px; }
-
-        /* Search & User List */
-        .search-area { padding: 15px; }
-        .neu-input { width: 100%; padding: 12px; background: var(--bg); border: none; border-radius: 15px; box-shadow: inset 5px 5px 10px var(--shadow), inset -5px -5px 10px var(--light); color: white; outline: none; box-sizing: border-box; }
-        
-        .chat-list { flex: 1; padding: 10px; }
-        .chat-item { display: flex; align-items: center; padding: 15px; background: var(--bg); margin-bottom: 15px; border-radius: 20px; box-shadow: 6px 6px 12px var(--shadow), -6px -6px 12px var(--light); cursor: pointer; transition: 0.2s; }
-        .chat-item:active { box-shadow: inset 4px 4px 8px var(--shadow), inset -4px -4px 8px var(--light); }
-        .chat-item img { width: 50px; height: 50px; border-radius: 50%; border: 2px solid var(--neon); margin-right: 15px; }
-
-        /* Custom Keyboard & Input */
-        #sticker-panel { display: none; background: var(--card); padding: 15px; border-radius: 20px 20px 0 0; max-height: 200px; overflow-y: auto; box-shadow: 0 -5px 15px var(--shadow); }
-        .sticker-img { width: 65px; height: 65px; margin: 8px; cursor: pointer; transition: 0.3s; }
-        .sticker-img:hover { transform: scale(1.1); }
-        
-        .input-bar { padding: 15px; background: var(--bg); display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--light); }
-        .icon-btn { background: none; border: none; font-size: 24px; cursor: pointer; filter: grayscale(1); }
-
-        .btn-main { background: var(--bg); border: none; padding: 15px; border-radius: 15px; box-shadow: 5px 5px 10px var(--shadow), -5px -5px 10px var(--light); color: white; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; }
+        #login-screen { height: 100vh; display: flex; justify-content: center; align-items: center; background: var(--bg); }
+        .login-btn { 
+            background: var(--bg); color: white; border: none; padding: 15px 30px; 
+            border-radius: 20px; box-shadow: 10px 10px 20px var(--shadow), -10px -10px 20px var(--light);
+            font-weight: bold; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
-<div id="login-page">
-    <div class="neu-card">
-        <h1 id="welcome-title" style="color: var(--neon);">ZIDDI CHAT</h1>
-        <p style="color: #888; font-size: 14px;">Connect Globally with 8-Digit UID</p>
-        <button class="btn-main" onclick="login()">Continue with Google</button>
-    </div>
+<div id="login-screen">
+    <button class="login-btn" onclick="login()">🚀 Login with Google</button>
 </div>
 
-<div id="main-app" class="app-container" style="display: none;">
-    <div class="header">
-        <h1 id="remote-header">Chat With Global</h1>
-        <div class="uid-tag">MY UNIQUE ID: <span id="display-uid" style="color: var(--neon); font-weight: bold;">...</span></div>
+<div id="main-app" class="app-container" style="display:none;">
+    <div class="top-uid-box">
+        <span>Your Personal UID</span>
+        <strong id="my-uid-display">ZID-00000000</strong>
     </div>
 
-    <div class="search-area">
-        <input type="text" class="neu-input" id="uidSearch" placeholder="Search 8-Digit UID..." onkeyup="searchByUID()">
+    <div class="tab-bar">
+        <div class="tab active" onclick="switchTab('contacts', this)">CONTACTS</div>
+        <div class="tab" onclick="switchTab('global', this)">GLOBAL</div>
     </div>
 
-    <div class="chat-list" id="users-container">
+    <div id="contacts" class="section active">
+        <button class="btn-add" onclick="addContactPrompt()">+ Add New Contact</button>
+        <div id="contacts-list">
+            <p style="text-align:center; color:#555;">No saved contacts yet.</p>
         </div>
-
-    <div id="sticker-panel">
-        <div id="sticker-grid" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
     </div>
 
-    <div class="input-bar">
-        <button class="icon-btn" onclick="toggleStickers()">🎨</button>
-        <input type="text" class="neu-input" placeholder="Type message...">
-        <button style="background: var(--neon); border: none; width: 45px; height: 45px; border-radius: 50%; color: #000; font-weight: bold; cursor: pointer;">➤</button>
+    <div id="global" class="section">
+        <div id="global-list">
+            </div>
     </div>
 </div>
 
@@ -98,19 +106,6 @@
 
     let currentUser = null;
 
-    // 1. Remote UI Listener (Admin Controls)
-    db.ref('app_settings/ui').on('value', snap => {
-        const ui = snap.val();
-        if(ui) {
-            if(ui.color) document.documentElement.style.setProperty('--neon', ui.color);
-            if(ui.welcome) {
-                document.getElementById('welcome-title').innerText = ui.welcome;
-                document.getElementById('remote-header').innerText = ui.welcome;
-            }
-        }
-    });
-
-    // 2. Login with 8-Digit UID Logic
     function login() {
         const provider = new firebase.auth.GoogleAuthProvider();
         auth.signInWithPopup(provider).then(res => {
@@ -118,70 +113,82 @@
             const userRef = db.ref('users/' + u.uid);
             
             userRef.once('value', snap => {
-                let userData = snap.val();
-                if(!userData) {
-                    const randomUID = 'ZID-' + Math.floor(10000000 + Math.random() * 90000000);
-                    userData = { name: u.displayName, photo: u.photoURL, uid: u.uid, ziddi_id: randomUID, status: 'active' };
-                    userRef.set(userData);
+                let data = snap.val();
+                if(!data) {
+                    const newUID = 'ZID-' + Math.floor(10000000 + Math.random() * 90000000);
+                    data = { name: u.displayName, photo: u.photoURL, uid: u.uid, ziddi_id: newUID, status: 'active' };
+                    userRef.set(data);
                 }
-
-                if(userData.status === 'blocked') {
-                    alert("⚠️ Access Denied! You are blocked.");
-                    auth.signOut();
-                } else {
-                    currentUser = userData;
-                    document.getElementById('login-page').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'flex';
-                    document.getElementById('display-uid').innerText = userData.ziddi_id;
-                    loadGlobalUsers();
-                    loadRemoteStickers();
-                }
+                
+                currentUser = data;
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'flex';
+                document.getElementById('my-uid-display').innerText = data.ziddi_id;
+                
+                loadGlobalList();
+                loadSavedContacts();
             });
         });
     }
 
-    // 3. Load Stickers from Admin
-    function loadRemoteStickers() {
-        db.ref('app_settings/keyboard/stickers').on('value', snap => {
-            const grid = document.getElementById('sticker-grid');
-            grid.innerHTML = "";
-            snap.forEach(s => {
-                grid.innerHTML += `<img src="${s.val()}" class="sticker-img" onclick="alert('Sticker Sent!')">`;
-            });
-        });
+    function switchTab(id, el) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
     }
 
-    // 4. Load Users with Search Feature
-    function loadGlobalUsers() {
+    // Load All Registered Users (Global Tab)
+    function loadGlobalList() {
         db.ref('users').on('value', snap => {
-            const container = document.getElementById('users-container');
-            container.innerHTML = "";
+            const list = document.getElementById('global-list');
+            list.innerHTML = "";
             snap.forEach(child => {
                 const u = child.val();
                 if(u.uid !== currentUser.uid) {
-                    container.innerHTML += `
-                    <div class="chat-item" data-uid="${u.ziddi_id}">
-                        <img src="${u.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
-                        <div>
-                            <strong>${u.name}</strong><br>
-                            <small style="color:#888;">ID: ${u.ziddi_id}</small>
-                        </div>
-                    </div>`;
+                    list.innerHTML += `
+                        <div class="user-card">
+                            <img src="${u.photo}">
+                            <div class="user-info">
+                                <b>${u.ziddi_id}</b>
+                                <small>Registered Member</small>
+                            </div>
+                        </div>`;
                 }
             });
         });
     }
 
-    function searchByUID() {
-        const term = document.getElementById('uidSearch').value.toUpperCase();
-        document.querySelectorAll('.chat-item').forEach(item => {
-            item.style.display = item.dataset.uid.includes(term) ? 'flex' : 'none';
-        });
+    // Add Contact via UID
+    function addContactPrompt() {
+        const uid = prompt("Enter Member's 8-Digit UID (e.g., ZID-12345678):");
+        const nickname = prompt("Enter Name to Save:");
+        if(uid && nickname) {
+            db.ref('contacts/' + currentUser.uid).push({ uid: uid, nickname: nickname });
+            alert("Contact Saved!");
+        }
     }
 
-    function toggleStickers() {
-        const p = document.getElementById('sticker-panel');
-        p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    // Load Saved Contacts
+    function loadSavedContacts() {
+        db.ref('contacts/' + currentUser.uid).on('value', snap => {
+            const list = document.getElementById('contacts-list');
+            list.innerHTML = "";
+            if(!snap.exists()) {
+                list.innerHTML = "<p style='text-align:center; color:#555;'>No saved contacts.</p>";
+                return;
+            }
+            snap.forEach(child => {
+                const c = child.val();
+                list.innerHTML += `
+                    <div class="user-card" onclick="alert('Starting chat with ${c.nickname}...')">
+                        <div class="user-info">
+                            <b>${c.nickname}</b>
+                            <small>${c.uid}</small>
+                        </div>
+                    </div>`;
+            });
+        });
     }
 </script>
 </body>
