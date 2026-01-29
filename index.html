@@ -9,50 +9,49 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root {
-            --bg: #0b0e11; --card: #15191c; --neon: #00ff88; 
-            --shadow: #000000; --light: #1f262b; --msg-me: #005c4b; --msg-them: #202c33;
+            --bg: #0b1014; --card: #111b21; --neon: #00ff88; 
+            --light: #202c33; --msg-me: #005c4b; --msg-them: #202c33;
         }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
         
         /* Login Screen */
         #login-page { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .login-box { padding: 40px; background: var(--card); border-radius: 30px; text-align: center; border: 1px solid var(--light); box-shadow: 0 10px 40px #000; width: 85%; max-width: 320px; }
-        .btn-google { background: #fff; color: #000; padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 16px; }
+        .login-box { padding: 40px; background: var(--card); border-radius: 25px; text-align: center; border: 1px solid var(--light); width: 85%; max-width: 320px; box-shadow: 0 20px 50px #000; }
+        .btn-google { background: #fff; color: #000; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
         /* Main Shell */
-        #app-shell { max-width: 450px; margin: auto; height: 100vh; display: none; flex-direction: column; position: relative; }
+        #app-shell { max-width: 500px; margin: auto; height: 100vh; display: none; flex-direction: column; position: relative; }
         
-        /* Header Fix: Chat With Me */
-        .header { padding: 20px 15px; border-bottom: 1px solid var(--light); text-align: center; background: var(--bg); }
-        .header h2 { margin: 0; font-size: 20px; color: var(--neon); text-transform: uppercase; letter-spacing: 1px; }
+        .header { padding: 25px 15px 15px; border-bottom: 1px solid var(--light); text-align: center; background: var(--bg); }
+        .header h2 { margin: 0; font-size: 22px; color: var(--neon); letter-spacing: 1px; text-transform: uppercase; }
         .uid-tag { color: var(--neon); font-weight: bold; padding: 5px 15px; border: 1px solid var(--neon); border-radius: 20px; display: inline-block; margin-top: 10px; font-size: 12px; background: rgba(0,255,136,0.1); }
 
-        /* Tabs Swap: Contacts first */
         .tabs { display: flex; background: var(--card); border-bottom: 1px solid var(--light); }
-        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: #666; font-weight: bold; font-size: 14px; }
-        .tab.active { color: var(--neon); border-bottom: 3px solid var(--neon); background: rgba(0,255,136,0.05); }
+        .tab { flex: 1; padding: 15px; text-align: center; cursor: pointer; color: #8696a0; font-weight: bold; font-size: 14px; }
+        .tab.active { color: var(--neon); border-bottom: 3px solid var(--neon); }
 
-        /* List Styling */
-        .list-area { flex: 1; overflow-y: auto; padding: 10px; padding-bottom: 100px; }
-        .user-card { display: flex; align-items: center; padding: 15px; background: var(--card); border-radius: 15px; margin-bottom: 10px; cursor: pointer; border: 1px solid #1f262b; transition: 0.2s; }
-        .user-card:active { transform: scale(0.98); background: #1c2226; }
-        .user-card img { width: 50px; height: 50px; border-radius: 50%; margin-right: 15px; border: 1.5px solid var(--neon); object-fit: cover; }
-        .user-info b { display: block; font-size: 16px; color: #eee; }
-        .user-info span { font-size: 11px; color: var(--neon); opacity: 0.7; }
+        .list-area { flex: 1; overflow-y: auto; padding: 10px; }
+        .user-card { display: flex; align-items: center; padding: 12px 15px; background: var(--card); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid var(--light); }
+        .user-card img { width: 48px; height: 48px; border-radius: 50%; margin-right: 15px; border: 1.5px solid var(--neon); object-fit: cover; }
+        
+        /* Floating Button - Center Right */
+        .fab { 
+            position: absolute; top: 50%; right: 15px; transform: translateY(-50%);
+            background: var(--neon); width: 55px; height: 55px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; 
+            color: #000; font-size: 30px; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(0,255,136,0.4); z-index: 1000; 
+        }
 
-        /* Floating Button Moved Up */
-        .fab { position: absolute; bottom: 45px; right: 25px; background: var(--neon); width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #000; font-size: 30px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.5); z-index: 99; }
-
-        /* Chat Window Overlay */
-        #chat-window { position: fixed; inset: 0; background: var(--bg); z-index: 2000; display: none; flex-direction: column; }
-        .chat-header { padding: 12px; background: var(--card); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--light); }
-        .chat-header img { width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--neon); }
-        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #0b141a; }
-        .msg { max-width: 75%; padding: 10px 14px; border-radius: 12px; font-size: 14px; }
-        .msg.me { align-self: flex-end; background: var(--msg-me); border-top-right-radius: 2px; }
-        .msg.them { align-self: flex-start; background: var(--msg-them); border-top-left-radius: 2px; }
-        .input-bar { padding: 10px; display: flex; gap: 10px; background: var(--card); border-top: 1px solid var(--light); }
-        .msg-input { flex: 1; padding: 12px; border-radius: 25px; border: none; background: var(--bg); color: #fff; outline: none; }
+        /* Chat Overlay */
+        #chat-window { position: fixed; inset: 0; background: var(--bg); z-index: 5000; display: none; flex-direction: column; }
+        .chat-header { padding: 10px 15px; background: var(--card); display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--light); }
+        .chat-body { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background-color: #0b141a; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay; }
+        .msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 14px; }
+        .msg.me { align-self: flex-end; background: var(--msg-me); border-top-right-radius: 0; }
+        .msg.them { align-self: flex-start; background: var(--msg-them); border-top-left-radius: 0; }
+        .input-bar { padding: 10px; display: flex; gap: 8px; background: var(--card); }
+        .msg-input { flex: 1; padding: 12px 18px; border-radius: 25px; border: none; background: #2a3942; color: #fff; outline: none; }
     </style>
 </head>
 <body>
@@ -60,9 +59,9 @@
 <div id="login-page">
     <div class="login-box">
         <h1 style="color:var(--neon); margin:0;">ZIDDI</h1>
-        <p style="color:#888; font-size:14px; margin-bottom:30px;">Premium Chat Network</p>
+        <p style="color:#8696a0; font-size:13px; margin-bottom:25px;">Premium Real-Time Chat</p>
         <button class="btn-google" onclick="login()">
-            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20"> Login with Google
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Login with Google
         </button>
     </div>
 </div>
@@ -70,7 +69,7 @@
 <div id="app-shell">
     <div class="header">
         <h2>Chat With Me</h2>
-        <div class="uid-tag" id="my-uid">Loading ID...</div>
+        <div class="uid-tag" id="my-uid-tag">UNIQUE UID: LOADING...</div>
     </div>
     <div class="tabs">
         <div class="tab active" id="t-contacts" onclick="switchTab('contacts')">CONTACTS</div>
@@ -83,10 +82,10 @@
 <div id="chat-window">
     <div class="chat-header">
         <button onclick="closeChat()" style="background:none; border:none; color:var(--neon); font-size:30px; cursor:pointer;">←</button>
-        <img id="c-pfp" src="">
+        <img id="c-pfp" src="" style="width:38px; height:38px; border-radius:50%; border:1px solid var(--neon);">
         <div style="flex:1">
-            <b id="c-name" style="font-size:16px;">User</b><br>
-            <small id="c-uid" style="color:var(--neon); font-size:10px;"></small>
+            <b id="c-name">User</b><br>
+            <small id="c-uid" style="color:var(--neon); font-size:10px; font-weight:bold;"></small>
         </div>
     </div>
     <div class="chat-body" id="chat-msgs"></div>
@@ -114,28 +113,29 @@
     let me = null;
     let activeUID = null;
 
+    // LOGIN PERSISTENCE (Saves login session)
     function login() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        auth.signInWithPopup(provider).then(res => {
-            handleUser(res.user);
-        }).catch(err => alert("Login Error: " + err.message));
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            return auth.signInWithPopup(provider);
+        })
+        .then(res => handleUser(res.user))
+        .catch(err => alert("Login Error: " + err.message));
     }
 
     function handleUser(u) {
-        db.ref('users/' + u.uid).once('value', snap => {
+        db.ref('v2_users/' + u.uid).once('value', snap => {
             let data = snap.val();
-            // Undefined check & Unique UID generation
-            if(!data || !data.ziddi_id || data.ziddi_id === "undefined") {
-                const zid = 'ZID-' + Math.floor(10000000 + Math.random() * 90000000);
-                data = { name: u.displayName || "User", photo: u.photoURL || "", uid: u.uid, ziddi_id: zid };
-                db.ref('users/' + u.uid).set(data);
+            if(!data) {
+                const num = 'UID-' + Math.floor(10000000 + Math.random() * 90000000);
+                data = { name: u.displayName, photo: u.photoURL, uid: u.uid, uid_number: num };
+                db.ref('v2_users/' + u.uid).set(data);
             }
             me = data;
-            if(me.name === "undefined") me.name = u.displayName; // Re-fix if corrupted
-            
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('app-shell').style.display = 'flex';
-            document.getElementById('my-uid').innerText = me.ziddi_id;
+            document.getElementById('my-uid-tag').innerText = "UNIQUE UID: " + me.uid_number;
             loadList('contacts');
         });
     }
@@ -149,20 +149,20 @@
     }
 
     function loadList(type) {
-        const path = type === 'global' ? 'users' : 'contacts/' + me.uid;
+        // Path change to v2_users to avoid old "undefined" data
+        const path = type === 'global' ? 'v2_users' : 'contacts/' + me.uid;
         db.ref(path).on('value', snap => {
             const list = document.getElementById('main-list');
             list.innerHTML = "";
             snap.forEach(child => {
                 const u = child.val();
-                // STRICT FILTER: Undefined users block kiye hain
-                if(u.uid && u.uid !== me.uid && u.name && u.name !== "undefined" && u.ziddi_id !== "undefined") {
+                if(u.uid && u.uid !== me.uid && u.name !== "undefined") {
                     list.innerHTML += `
-                        <div class="user-card" onclick="openChat('${u.name}', '${u.photo}', '${u.uid}', '${u.ziddi_id || u.zid}')">
+                        <div class="user-card" onclick="openChat('${u.name}', '${u.photo}', '${u.uid}', '${u.uid_number}')">
                             <img src="${u.photo || 'https://cdn-icons-png.flaticon.com/512/149/149071.png'}">
                             <div class="user-info">
-                                <b>${u.name}</b>
-                                <span>ID: ${u.ziddi_id || u.zid}</span>
+                                <b style="display:block">${u.name}</b>
+                                <span style="font-size:11px; color:var(--neon)">ID: ${u.uid_number}</span>
                             </div>
                         </div>`;
                 }
@@ -170,18 +170,15 @@
         });
     }
 
-    function openChat(name, pfp, uid, zid) {
+    function openChat(name, pfp, uid, uidNum) {
         activeUID = uid;
         document.getElementById('chat-window').style.display = 'flex';
         document.getElementById('c-name').innerText = name;
-        document.getElementById('c-uid').innerText = zid;
+        document.getElementById('c-uid').innerText = uidNum;
         document.getElementById('c-pfp').src = pfp || 'https://cdn-icons-png.flaticon.com/512/149/149071.png';
-        
         const chatId = me.uid < uid ? me.uid + "_" + uid : uid + "_" + me.uid;
-        db.ref('messages/' + chatId).off();
         db.ref('messages/' + chatId).on('value', snap => {
-            const box = document.getElementById('chat-msgs');
-            box.innerHTML = "";
+            const box = document.getElementById('chat-msgs'); box.innerHTML = "";
             snap.forEach(c => {
                 const m = c.val();
                 box.innerHTML += `<div class="msg ${m.sender === me.uid ? 'me' : 'them'}">${m.text}</div>`;
@@ -192,22 +189,21 @@
 
     function sendMsg() {
         const input = document.getElementById('m-input');
-        if(!input.value.trim() || !activeUID) return;
+        if(!input.value.trim()) return;
         const chatId = me.uid < activeUID ? me.uid + "_" + activeUID : activeUID + "_" + me.uid;
         db.ref('messages/' + chatId).push({ sender: me.uid, text: input.value });
         input.value = "";
     }
 
     function addContact() {
-        const id = prompt("Enter Member ZID (e.g. ZID-12345678):");
+        const id = prompt("Enter Member UNIQUE UID:");
         if(!id) return;
-        db.ref('users').orderByChild('ziddi_id').equalTo(id.trim()).once('value', snap => {
+        db.ref('v2_users').orderByChild('uid_number').equalTo(id.trim()).once('value', snap => {
             if(snap.exists()) {
                 const found = Object.values(snap.val())[0];
-                db.ref('contacts/' + me.uid + '/' + found.uid).set({ name: found.name, photo: found.photo, uid: found.uid, zid: found.ziddi_id });
-                alert("Saved to Contacts!");
-                switchTab('contacts');
-            } else alert("User not found!");
+                db.ref('contacts/' + me.uid + '/' + found.uid).set(found);
+                alert("Saved!"); switchTab('contacts');
+            } else alert("Not Found!");
         });
     }
 
