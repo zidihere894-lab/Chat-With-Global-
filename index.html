@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat With Global</title>
+    <style>
+        :root {
+            --bg: #1a1d21;
+            --neon: #2ecc71;
+            --shadow: #121417;
+            --light: #22262b;
+        }
+        body { 
+            background: var(--bg); 
+            color: white; 
+            font-family: 'Poppins', sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            overflow: hidden;
+        }
+        .app-container { 
+            width: 100%; 
+            max-width: 450px; 
+            height: 100vh; 
+            background: var(--bg); 
+            position: relative; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Center Login Screen */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .neu-card {
+            background: var(--bg);
+            border-radius: 30px;
+            box-shadow: 10px 10px 20px var(--shadow), -10px -10px 20px var(--light);
+            padding: 40px 20px;
+            text-align: center;
+            width: 80%;
+        }
+
+        h1 { color: var(--neon); font-size: 22px; margin-bottom: 30px; letter-spacing: 1px; }
+
+        /* Google Login Button with Logo */
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 15px;
+            background: var(--bg);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 6px 6px 12px var(--shadow), -6px -6px 12px var(--light);
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .google-btn:active {
+            box-shadow: inset 4px 4px 8px var(--shadow), inset -4px -4px 8px var(--light);
+            transform: scale(0.98);
+        }
+        .google-btn img { width: 24px; height: 24px; }
+
+        /* Members List & Header (Hidden at Start) */
+        #main-content { display: none; flex-direction: column; height: 100%; overflow-y: auto; padding: 20px; }
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: var(--bg);
+            border-radius: 20px;
+            box-shadow: 6px 6px 12px var(--shadow), -6px -6px 12px var(--light);
+            margin-bottom: 15px;
+        }
+        .member-item img { width: 45px; height: 45px; border-radius: 50%; border: 2px solid var(--neon); margin-right: 15px; }
+
+        /* Admin Box at Bottom */
+        .admin-box {
+            margin-top: auto;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #333;
+        }
+        .admin-link { color: #ff4757; text-decoration: none; font-weight: bold; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div id="login-screen">
+        <div class="neu-card">
+            <h1>CHAT WITH GLOBAL</h1>
+            <button class="google-btn" onclick="login()">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                Continue with Google
+            </button>
+            <p style="font-size: 11px; color: #666; margin-top: 20px;">Safe • Secure • Real-time</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <h2 style="color: var(--neon); text-align: center;">Global Members</h2>
+        <div id="users-list"></div>
+        
+        <div class="admin-box">
+            <p style="font-size: 12px; color: #888; margin-bottom: 5px;">Need Help?</p>
+            <a href="https://wa.me/923402439417" class="admin-link">Contact Admin (WhatsApp)</a>
+        </div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+    // Aapki Working Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCFy28nNtxhkjfpOd0aCfYkjHUwErh1WVQ",
+      authDomain: "movie-1e6fc.firebaseapp.com",
+      projectId: "movie-1e6fc",
+      databaseURL: "https://movie-1e6fc-default-rtdb.firebaseio.com",
+      storageBucket: "movie-1e6fc.firebasestorage.app",
+      messagingSenderId: "371616954594",
+      appId: "1:371616954594:web:977d88ec7570df351246bb"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    function login() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithPopup(provider).then(res => {
+            const user = res.user;
+            db.ref('users/' + user.uid).set({
+                name: user.displayName,
+                photo: user.photoURL,
+                uid: user.uid
+            });
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'flex';
+            loadUsers(user.uid);
+        }).catch(err => alert(err.message));
+    }
+
+    function loadUsers(myId) {
+        db.ref('users').on('value', snap => {
+            const list = document.getElementById('users-list');
+            list.innerHTML = "";
+            snap.forEach(child => {
+                const u = child.val();
+                if(u.uid !== myId) {
+                    list.innerHTML += `
+                    <div class="member-item">
+                        <img src="${u.photo}">
+                        <div><strong>${u.name}</strong></div>
+                    </div>`;
+                }
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
